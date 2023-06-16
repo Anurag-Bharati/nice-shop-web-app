@@ -7,6 +7,9 @@ node_modules/
 # testing
 /coverage
 
+# logs
+*.log
+
 # misc
 .DS_Store
 .env
