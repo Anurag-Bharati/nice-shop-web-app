@@ -2,8 +2,10 @@ import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import connectDB from "./config/db.js";
 import colors from "colors";
+
+import connectDB from "./config/db.js";
+import { notFound, errorHandler } from "./middleware/err.mware";
 
 // Config
 colors.enable();
@@ -18,9 +20,15 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(express.json());
+
+// config upload folder
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 app.get("/", (req, res) => res.send("API IS UP AND RUNNING"));
+
+// Routes Start
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(
     PORT,
