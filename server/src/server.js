@@ -1,8 +1,6 @@
-import fs from "fs";
 import path from "path";
 import express from "express";
 import dotenv from "dotenv";
-import morgan from "morgan";
 import colors from "colors";
 
 import connectDB from "./config/db.js";
@@ -19,8 +17,8 @@ const __dirname = path.resolve();
 const app = express();
 
 // Route Logging
-app.use("/hi", routeLogger("hi", __dirname));
-app.use("/bye", routeLogger("bye", __dirname));
+app.use("/hi", routeLogger("hi"));
+app.use("/bye", routeLogger("bye"));
 
 app.get("/hi", (req, res) => res.send("Hello there!"));
 app.get("/bye", (req, res) => res.send("Goodbye!"));
