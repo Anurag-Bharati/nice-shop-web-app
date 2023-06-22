@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const MAX_LOGIN_ATTEMPTS = 3; // Maximum allowed consecutive failed login attempts
-const LOCK_TIME = 12 * 60 * 60 * 1000; // Lock duration in milliseconds (12 hours)
+const LOCK_TIME = 24 * 60 * 60 * 1000; // Lock duration in milliseconds (24 hours)
+const PASSWORD_EXPIRATION = 90; // Password expiration in days
 
 const passwordValidator = (val) => /^.{8,12}$/.test(val);
 
@@ -13,9 +14,11 @@ const userSchema = mongoose.Schema(
         password: {
             type: String,
             required: true,
+            required: [true, "Please enter a password."],
+            minlength: [6, "Password must be at least 8 characters."],
             validate: {
                 validator: passwordValidator,
-                message: "Password must be 8 to 12 characters long.",
+                message: "Password must be 8 characters long.",
             },
         },
         isAdmin: { type: Boolean, required: true, default: false },
@@ -25,6 +28,13 @@ const userSchema = mongoose.Schema(
     },
     { timestamps: true }
 );
+
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) next();
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    this.passwordLastChanged = Date.now();
+});
 
 userSchema.methods.matchPassword = async function (password) {
     const isMatch = await bcrypt.compare(password, this.password);
@@ -37,14 +47,32 @@ userSchema.methods.matchPassword = async function (password) {
         }
         await this.save();
     }
+    return isMatch;
 };
 
-userSchema.methods.generateAccessToken = async function () {
-    return jwt.sign(
+userSchema.methods.passwordExpired = async function () {
+    const now = Date.now();
+    const passwordLastChanged = this.passwordLastChanged.getTime();
+    const passwordAge = now - passwordLastChanged;
+    const passwordAgeInDays = Math.floor(passwordAge / (1000 * 60 * 60 * 24));
+    return passwordAgeInDays >= PASSWORD_EXPIRATION;
+};
+
+userSchema.methods.generateSessionToken = async function () {
+    const token = jwt.sign(
         { _id: this._id, username: this.email, isAdmin: this.isAdmin },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
     );
+    const decodedData = jwt.decode(token);
+    const sessionToken = await UserSession.create({
+        token: token,
+        user: this._id,
+        issuedAt: decodedData.iat,
+        expiresAt: decodedData.exp,
+    });
+
+    return sessionToken;
 };
 
 userSchema.methods.isAccountLocked = function () {
