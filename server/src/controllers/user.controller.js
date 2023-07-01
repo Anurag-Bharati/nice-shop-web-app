@@ -36,7 +36,6 @@ const loginHandler = asyncHandler(async (req, res) => {
 const registerHandler = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
     const userExists = await User.findOne({ email });
-
     if (userExists) {
         res.status(400);
         throw new Error("User already exists");
@@ -60,6 +59,56 @@ const registerHandler = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Invalid user data");
     }
+});
+
+const verifyPass = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+    console.log(password);
+
+    const errors = [];
+    errors.push({
+        check: "at least 8 characters",
+        status: password?.length < 8,
+    });
+    errors.push({
+        check: "at least one uppercase letter",
+        status: !/[A-Z]/.test(password),
+    });
+    errors.push({
+        check: "at least one lowercase letter",
+        status: !/[a-z]/.test(password),
+    });
+    errors.push({
+        check: " at least one number",
+        status: !/[0-9]/.test(password),
+    });
+    errors.push({
+        check: " at least one special character",
+        status: !/[!@#$%^&*]/.test(password),
+    });
+    res.json(errors);
+});
+
+const verifyUsernameAndEmail = asyncHandler(async (req, res) => {
+    const { fullname, email } = req.body;
+    const emailErrors = [];
+    const nameErrors = [];
+
+    nameErrors.push({
+        check: "be at least 6 characters",
+        status: fullname.length < 6,
+    });
+    nameErrors.push({
+        check: "have  first and last name",
+        status: !/^[a-zA-Z]+\s[a-zA-Z]+$/.test(fullname),
+    });
+
+    emailErrors.push({
+        check: "a valid email",
+        status: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+    });
+
+    res.json({ nameErrors, emailErrors });
 });
 
 const getUserProfile = asyncHandler(async (req, res) => {
@@ -156,6 +205,8 @@ const updateUser = asyncHandler(async (req, res) => {
 export {
     loginHandler,
     registerHandler,
+    verifyUsernameAndEmail,
+    verifyPass,
     getUserProfile,
     updateUserProfile,
     getUsers,

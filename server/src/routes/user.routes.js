@@ -9,11 +9,16 @@ import {
     deleteUser,
     getUserById,
     updateUser,
+    verifyPass,
+    verifyUsernameAndEmail,
 } from "../controllers/user.controller.js";
 import { protect, admin } from "../middleware/auth.mware.js";
 
 router.route("/").post(registerHandler).get(protect, admin, getUsers);
 router.post("/login", loginHandler);
+router.post("/verify-password", verifyPass);
+router.post("/verify-fullname-and-email", verifyUsernameAndEmail);
+
 router
     .route("/profile")
     .get(protect, getUserProfile)

@@ -2,10 +2,13 @@ import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import colors from "colors";
+import cors from "cors";
 
 import connectDB from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/err.mware.js";
 import routeLogger from "./utils/logging.js";
+import userRoutes from "./routes/user.routes.js";
+import morgan from "morgan";
 
 // Config
 colors.enable();
@@ -16,21 +19,17 @@ const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 const app = express();
 
-// Route Logging
-app.use("/hi", routeLogger("hi"));
-app.use("/bye", routeLogger("bye"));
-
-app.get("/hi", (req, res) => res.send("Hello there!"));
-app.get("/bye", (req, res) => res.send("Goodbye!"));
-
+app.use(cors({ credentials: true, origin: "*" }));
 app.use(express.json());
-
+app.use(morgan("dev"));
 // config upload folder
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 app.get("/", (req, res) => res.send("API IS UP AND RUNNING"));
 
 // Routes Start
-app.use(notFound);
+app.use("/api/users", routeLogger("users"), userRoutes);
+
+app.get("*", notFound);
 app.use(errorHandler);
 
 app.listen(
