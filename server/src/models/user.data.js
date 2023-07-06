@@ -1,25 +1,21 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import UserSession from "./user.sessions.js";
 
 const MAX_LOGIN_ATTEMPTS = 3; // Maximum allowed consecutive failed login attempts
 const LOCK_TIME = 24 * 60 * 60 * 1000; // Lock duration in milliseconds (24 hours)
 const PASSWORD_EXPIRATION = 90; // Password expiration in days
 
-const passwordValidator = (val) => /^.{8,12}$/.test(val);
-
 const userSchema = mongoose.Schema(
     {
-        name: { type: String, required: true, trim: true },
+        fullname: { type: String, required: true, trim: true },
         email: { type: String, required: true, unique: true, trim: true },
         password: {
             type: String,
             required: true,
             required: [true, "Please enter a password."],
-            minlength: [6, "Password must be at least 8 characters."],
-            validate: {
-                validator: passwordValidator,
-                message: "Password must be 8 characters long.",
-            },
+            minlength: [8, "Password must be at least 8 characters."],
         },
         isAdmin: { type: Boolean, required: true, default: false },
         passwordLastChanged: { type: Date, default: Date.now },
@@ -50,7 +46,7 @@ userSchema.methods.matchPassword = async function (password) {
     return isMatch;
 };
 
-userSchema.methods.passwordExpired = async function () {
+userSchema.methods.isPasswordExpired = function () {
     const now = Date.now();
     const passwordLastChanged = this.passwordLastChanged.getTime();
     const passwordAge = now - passwordLastChanged;
@@ -58,11 +54,11 @@ userSchema.methods.passwordExpired = async function () {
     return passwordAgeInDays >= PASSWORD_EXPIRATION;
 };
 
-userSchema.methods.generateSessionToken = async function () {
+userSchema.methods.generateSession = async function () {
     const token = jwt.sign(
-        { _id: this._id, username: this.email, isAdmin: this.isAdmin },
+        { _id: this._id, email: this.email, isAdmin: this.isAdmin },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
+        { expiresIn: process.env.ACCESS_TOKEN_LIFE }
     );
     const decodedData = jwt.decode(token);
     const sessionToken = await UserSession.create({

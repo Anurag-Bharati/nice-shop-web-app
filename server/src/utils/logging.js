@@ -19,7 +19,7 @@ const createLogStream = (routeName) => {
 
 // Middleware to log requests for a specific route
 const routeLogger = (routeName) => {
-    const logStream = createLogStream(routeName, __dirname);
+    const logStream = createLogStream(routeName);
     return morgan("combined", { stream: logStream });
 };
 export default routeLogger;

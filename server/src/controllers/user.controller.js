@@ -1,5 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/user.data.js";
+import commonPwds from "../config/common.pwd.js";
+import { levenshteinDistance } from "../utils/helper.js";
 
 const loginHandler = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -14,18 +16,14 @@ const loginHandler = asyncHandler(async (req, res) => {
         throw new Error("Account is locked");
     }
 
-    if (user.isPasswordExpired()) {
-        res.status(403); // Forbidden
-        throw new Error("Password is expired");
-    }
-
     if (user && (await user.matchPassword(password))) {
         res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
-            token: user.generateSession(),
+            token: (await user.generateSession()).token,
+            passwordExpired: await user.isPasswordExpired(),
         });
     } else {
         res.status(401);
@@ -34,15 +32,57 @@ const loginHandler = asyncHandler(async (req, res) => {
 });
 
 const registerHandler = asyncHandler(async (req, res) => {
-    const { name, email, password } = req.body;
+    const { fullname, email, password } = req.body;
+
+    // Check if user with the same email already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
         res.status(400);
         throw new Error("User already exists");
     }
 
+    // Extract email name and domain
+    const [emailName, emailDomain] = email
+        .split("@")
+        .map((part) => part.toLowerCase());
+    const nameSegments = fullname.toLowerCase().split(" ");
+
+    // Check if name, email name, or email domain are part of the password
+    const nameOrEmailInPwd =
+        nameSegments.some((segment) =>
+            password.toLowerCase().includes(segment)
+        ) ||
+        password.toLowerCase().includes(emailName) ||
+        password.toLowerCase().includes(emailDomain);
+    if (nameOrEmailInPwd) {
+        res.status(400);
+        throw new Error("Password cannot contain name or email");
+    }
+
+    // check if password is too long
+    if (password.length > 128) {
+        res.status(400);
+        throw new Error("Password is too long");
+    }
+
+    // Check if password is too common (based on Levenshtein distance)
+    const isSimilarToCommonPassword = commonPwds.some((pwd) => {
+        const similarityThreshold = Math.min(pwd.length / 3, 4);
+        const distance = levenshteinDistance(
+            pwd.toLowerCase(),
+            password.toLowerCase()
+        );
+        return distance <= similarityThreshold;
+    });
+
+    if (isSimilarToCommonPassword) {
+        res.status(400);
+        throw new Error("Password is too common");
+    }
+
+    // Create user
     const user = await User.create({
-        name,
+        fullname,
         email,
         password,
     });
@@ -53,7 +93,7 @@ const registerHandler = asyncHandler(async (req, res) => {
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
-            token: generateToken(user._id),
+            token: user.generateSession(),
         });
     } else {
         res.status(400);
@@ -63,8 +103,6 @@ const registerHandler = asyncHandler(async (req, res) => {
 
 const verifyPass = asyncHandler(async (req, res) => {
     const { password } = req.body;
-    console.log(password);
-
     const errors = [];
     errors.push({
         check: "at least 8 characters",
@@ -79,11 +117,11 @@ const verifyPass = asyncHandler(async (req, res) => {
         status: !/[a-z]/.test(password),
     });
     errors.push({
-        check: " at least one number",
+        check: "at least one number",
         status: !/[0-9]/.test(password),
     });
     errors.push({
-        check: " at least one special character",
+        check: "at least one special character",
         status: !/[!@#$%^&*]/.test(password),
     });
     res.json(errors);
