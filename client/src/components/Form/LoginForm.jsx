@@ -1,9 +1,12 @@
 import { userState } from "@/atoms/user.atom";
+import { loginUser } from "@/services/user.service";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 
 const LoginForm = ({ formRef }) => {
+    const router = useRouter();
     const [user, setUser] = useRecoilState(userState);
     const [state, setState] = useState({ loading: false, error: null });
 
@@ -18,10 +21,14 @@ const LoginForm = ({ formRef }) => {
             email: email.value,
             password: password.value,
         });
+        console.log("RES", res);
         if (res.status === 200) {
             setUser(res.data);
             setState({ loading: false, error: null });
-        } else setState({ loading: false, error: "Invalid Email or Password" });
+            if (res.data.passwordExpired) router.push("/change-password");
+            else if (res.data.isAdmin) router.push("/admin");
+            else router.push("/");
+        } else setState({ loading: false, error: res.message });
     };
 
     return (
@@ -92,6 +99,11 @@ const LoginForm = ({ formRef }) => {
                 >
                     Login
                 </button>
+            </div>
+            <div className="flex items-center justify-center">
+                {state.error && (
+                    <p className="text-red-500 text-sm">{state.error}</p>
+                )}
             </div>
         </form>
     );

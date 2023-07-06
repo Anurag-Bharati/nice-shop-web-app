@@ -35,3 +35,8 @@ export const signUpFormDataState = atom({
         password: "",
     },
 });
+
+export const isLoginFormActive = atom({
+    key: "isLoginFormActive",
+    default: true,
+});

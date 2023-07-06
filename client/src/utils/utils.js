@@ -17,7 +17,6 @@ export const validateForm = (
     const isFullnameValid = validateFullName(nameErrors);
     const isEmailValid = validateEmail(emailErrors);
     const isPasswordValid = validatePassword(passErrors);
-    console.log(isFullnameValid, isEmailValid, isPasswordValid);
     setState({
         ...state,
         highlight: {
@@ -26,4 +25,6 @@ export const validateForm = (
             password: !isPasswordValid,
         },
     });
+
+    return isFullnameValid && isEmailValid && isPasswordValid;
 };

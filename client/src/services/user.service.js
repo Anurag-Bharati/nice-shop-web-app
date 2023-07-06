@@ -3,14 +3,15 @@ import axios from "axios";
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/users`;
 
 export const registerUser = async (userData) => {
-    console.log(userData);
     try {
         const response = await axios.post(API_URL, userData);
-        console.log(response);
-        return response.data;
+        return { status: response.status, message: response.data.message };
     } catch (error) {
         console.error(error.message);
-        return { status: error.code, message: error.message };
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
     }
 };
 
@@ -45,10 +46,14 @@ export const verifyFullnameAndEmail = async (fullname, email) => {
 export const loginUser = async (userData) => {
     try {
         const response = await axios.post(`${API_URL}/login`, userData);
-        return response.data;
+        console.log(response);
+        return { status: response.status, data: response.data };
     } catch (error) {
-        console.error(error.message);
-        return { status: error.code, message: error.message };
+        console.error(error.response);
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
     }
 };
 
