@@ -8,6 +8,7 @@ import connectDB from "./config/db.js";
 import { notFound, errorHandler } from "./middleware/err.mware.js";
 import routeLogger from "./utils/logging.js";
 import userRoutes from "./routes/user.routes.js";
+import productRoutes from "./routes/product.routes.js";
 import morgan from "morgan";
 
 // Config
@@ -28,6 +29,7 @@ app.get("/", (req, res) => res.send("API IS UP AND RUNNING"));
 
 // Routes Start
 app.use("/api/users", routeLogger("users"), userRoutes);
+app.use("/api/products", routeLogger("product"), productRoutes);
 
 app.get("*", notFound);
 app.use(errorHandler);
