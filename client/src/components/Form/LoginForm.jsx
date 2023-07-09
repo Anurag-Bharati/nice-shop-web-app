@@ -25,9 +25,9 @@ const LoginForm = ({ formRef }) => {
         if (res.status === 200) {
             setUser(res.data);
             setState({ loading: false, error: null });
-            if (res.data.passwordExpired) router.push("/change-password");
-            else if (res.data.isAdmin) router.push("/admin");
-            else router.push("/");
+            if (res.data.passwordExpired) router.replace("/change-password");
+            else if (res.data.isAdmin) router.replace("/admin");
+            else router.replace("/");
         } else setState({ loading: false, error: res.message });
     };
 

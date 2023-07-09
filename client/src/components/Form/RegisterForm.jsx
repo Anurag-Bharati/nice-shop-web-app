@@ -134,7 +134,11 @@ const RegisterForm = ({ formRef }) => {
                             ) : (
                                 <FaCheck className="text-green-400" />
                             )}
-                            <li className={!error.status && "text-green-500"}>
+                            <li
+                                className={
+                                    !error.status ? "text-green-500" : ""
+                                }
+                            >
                                 {error.check}
                             </li>
                         </div>

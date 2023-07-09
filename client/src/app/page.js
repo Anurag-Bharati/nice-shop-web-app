@@ -1,11 +1,35 @@
-import Products from "@/components/product/Products";
-import { getProducts } from "@/services/product.service";
+import AllProducts from "@/components/product/AllProducts";
+import Hero from "@/components/product/Hero";
+import ProductCard from "@/components/product/ProductCard";
+import { getProducts, getTopProducts } from "@/services/product.service";
 
 export default async function Home() {
     const products = (await getProducts()) ?? [];
+    const topProducts = (await getTopProducts()) ?? [];
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <Products products={products} />
+        <main className="">
+            <Hero />
+            <section className="relative isolate flex flex-col justify-start items-start p-6">
+                <div className="h-full w-full">
+                    <div className="flex flex-col justify-center items-start  max-w-6xl mx-auto">
+                        <div className="max-w-xl ">
+                            <h2 className="mb-4 text-4xl tracking-tight font-bold">
+                                Top Rated Products
+                            </h2>
+                            <p className="mb-5 font-light text-gray-500 sm:text-xl dark:text-gray-400">
+                                Shop hundreds of products worldwide.
+                            </p>
+                        </div>
+                        <div className="flex gap-2">
+                            {topProducts.map((product, index) => (
+                                <ProductCard key={index} data={product} />
+                            ))}
+                        </div>
+
+                        <AllProducts data={products} />
+                    </div>
+                </div>
+            </section>
         </main>
     );
 }
