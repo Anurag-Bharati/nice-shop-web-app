@@ -2,6 +2,9 @@ import asyncHandler from "express-async-handler";
 import User from "../models/user.data.js";
 import commonPwds from "../config/common.pwd.js";
 import { levenshteinDistance } from "../utils/helper.js";
+import { send2FAWithTemplate } from "../utils/email.service.js";
+
+const otpBucket = new Map();
 
 const loginHandler = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -13,11 +16,69 @@ const loginHandler = asyncHandler(async (req, res) => {
     }
     if (user.isAccountLocked()) {
         res.status(403); // Forbidden
-        throw new Error("Account is locked");
+        throw new Error("Account is locked for 24 hrs");
+    }
+    if (!user) {
+        res.status(401);
+        throw new Error("Invalid email or password");
+    }
+    const passMatched = await user.matchPassword(password);
+    if (!passMatched) {
+        res.status(401);
+        const loginAttempts = (5 - user.loginAttempts) % 5;
+        if (loginAttempts === 0) {
+            res.status(403); // Forbidden
+            throw new Error("Account is locked for 24 hrs");
+        }
+        if (loginAttempts >= 3) {
+            res.status(401);
+            throw new Error("Invalid email or password");
+        }
+        throw new Error(
+            `Invalid email or password \n${loginAttempts} attempts left`
+        );
     }
 
-    if (user && (await user.matchPassword(password))) {
-        res.json({
+    if (user.is2FAEnabled) {
+        const otp = await send2FAWithTemplate(user);
+        otpBucket.set(user._id.toString(), {
+            otp,
+            expires: Date.now() + 1000 * 60 * 5, // 5 minutes
+        });
+        return res.json({
+            _id: user._id,
+            is2FAEnabled: true,
+        });
+    }
+    return res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token: (await user.generateSession()).token,
+        passwordExpired: await user.isPasswordExpired(),
+    });
+});
+
+const verify2FA = asyncHandler(async (req, res) => {
+    const { otp, id } = req.body;
+    const otpObject = otpBucket.get(id);
+    if (!otpObject) {
+        res.status(401);
+        throw new Error("OTP not generated");
+    }
+    if (otpObject.expires < Date.now()) {
+        res.status(401);
+        throw new Error("OTP expired");
+    }
+    if (otpObject.otp !== otp) {
+        res.status(401);
+        throw new Error("Invalid OTP");
+    }
+    otpBucket.delete(id);
+    const user = await User.findOne({ _id: id });
+    if (user) {
+        return res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -25,10 +86,9 @@ const loginHandler = asyncHandler(async (req, res) => {
             token: (await user.generateSession()).token,
             passwordExpired: await user.isPasswordExpired(),
         });
-    } else {
-        res.status(401);
-        throw new Error("Invalid email or password");
     }
+    res.status(401);
+    throw new Error("Something went wrong");
 });
 
 const registerHandler = asyncHandler(async (req, res) => {
@@ -240,7 +300,18 @@ const updateUser = asyncHandler(async (req, res) => {
     }
 });
 
+const updatePassword = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user.id);
+    user.password = req.body.newPassword;
+    user.passwordLastChanged = new Date();
+    await user.save();
+    res.json({ message: "Password changed successfully." });
+    res.status(500).json({ message: "An error occurred." });
+});
+
 export {
+    verify2FA,
+    updatePassword,
     loginHandler,
     registerHandler,
     verifyUsernameAndEmail,
