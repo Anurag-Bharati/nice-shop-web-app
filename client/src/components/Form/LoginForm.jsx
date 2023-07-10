@@ -1,11 +1,13 @@
 import { userState } from "@/atoms/user.atom";
 import { loginUser } from "@/services/user.service";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 
 const LoginForm = ({ formRef }) => {
+    const params = useSearchParams();
+    const callback = params.get("callback");
     const router = useRouter();
     const [user, setUser] = useRecoilState(userState);
     const [state, setState] = useState({ loading: false, error: null });
@@ -26,6 +28,7 @@ const LoginForm = ({ formRef }) => {
             setUser(res.data);
             setState({ loading: false, error: null });
             if (res.data.passwordExpired) router.replace("/change-password");
+            if (callback) router.replace(callback);
             else if (res.data.isAdmin) router.replace("/admin");
             else router.replace("/");
         } else setState({ loading: false, error: res.message });

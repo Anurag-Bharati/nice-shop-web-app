@@ -1,18 +1,32 @@
 "use client";
 
 import { cartState } from "@/atoms/cart.atom";
+import { userState } from "@/atoms/user.atom";
 import Link from "next/link";
 import { useState } from "react";
 import { BiCart, BiMenu, BiX } from "react-icons/bi";
 import { FaUserCircle } from "react-icons/fa";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const Header = () => {
+    const user = useRecoilValue(userState);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const toggleCart = () => setIsCartOpen(!isCartOpen);
     const [cart, setCart] = useRecoilState(cartState);
+    const [initiateCheckout, setInitiateCheckout] = useState(false);
     const [total, setTotal] = useState(0);
-    const handleCheckout = () => null;
+
+    const handleCheckout = () => {
+        setInitiateCheckout(true);
+        setTimeout(() => {
+            setInitiateCheckout(false);
+        }, 3000);
+    };
+    const handleRemoveFromCart = (e) => {
+        const id = e.target.dataset.id;
+        const newCart = cart.filter((item) => item.id !== id);
+        setCart(newCart);
+    };
     return (
         <div>
             <nav className=" fixed w-full bg-white border-gray-200 dark:bg-white z-50 border-b ">
@@ -81,21 +95,25 @@ const Header = () => {
                             </li>
 
                             <li>
-                                <a
-                                    href="#"
+                                <Link
+                                    scroll={true}
+                                    passHref={true}
+                                    href="/#top-products"
                                     className="block py-2 pl-3 pr-4 text-gray-900 rounded  md:p-0 hover:text-[#94d82d]"
                                 >
-                                    Products
-                                </a>
+                                    Featured
+                                </Link>
                             </li>
 
                             <li>
-                                <a
-                                    href="#"
+                                <Link
+                                    scroll={true}
+                                    passHref={true}
+                                    href="/#products"
                                     className="block py-2 pl-3 pr-4 text-gray-900 rounded  md:p-0 hover:text-[#94d82d]"
                                 >
-                                    About
-                                </a>
+                                    Products
+                                </Link>
                             </li>
                         </ul>
                     </div>
