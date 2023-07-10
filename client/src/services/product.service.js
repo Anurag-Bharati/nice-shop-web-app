@@ -8,6 +8,10 @@ export const getProducts = async () => {
         return response.data.products;
     } catch (error) {
         console.error(error.message);
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
     }
 };
 
@@ -17,5 +21,22 @@ export const getTopProducts = async () => {
         return response.data;
     } catch (error) {
         console.error(error.message);
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
+    }
+};
+
+export const getProductByID = async (id) => {
+    try {
+        const response = await axios.get(`${API_URL}/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error(error.message);
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
     }
 };

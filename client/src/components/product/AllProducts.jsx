@@ -15,7 +15,7 @@ const AllProducts = ({ data }) => {
     );
 
     return (
-        <div className="w-full mt-10">
+        <section className="w-full mt-10 scroll-m-24" id="products">
             <div className="flex justify-between w-full">
                 <h2 className="mb-4 text-4xl tracking-tight font-bold">
                     Products
@@ -55,7 +55,7 @@ const AllProducts = ({ data }) => {
                     <ProductCard data={data} key={index} />
                 ))}
             </div>
-        </div>
+        </section>
     );
 };
 

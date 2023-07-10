@@ -78,3 +78,20 @@ body::-webkit-scrollbar-thumb {
         background-position: 400px 0;
     }
 }
+
+html {
+    scroll-behavior: smooth !important;
+}
+
+.nice-scroll-bar::-webkit-scrollbar {
+    width: 0.25rem !important;
+}
+
+.nice-scroll-bar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.nice-scroll-bar::-webkit-scrollbar-thumb {
+    background: transparent !important;
+    border-radius: 10px !important;
+}

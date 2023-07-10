@@ -20,7 +20,7 @@ const HeroRight = () => {
                             500 +
                         </h3>
                         <p className="lg:mt-2  md:text-sm lg:text-lg xl:text-xl text-white font-light ">
-                            Free Mystery Gifts: It's raining gifts this weekend!
+                            It's raining gifts this weekend!
                         </p>
                     </div>
                 </div>

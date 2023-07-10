@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 import AllProducts from "@/components/product/AllProducts";
 import Hero from "@/components/product/Hero";
 import ProductCard from "@/components/product/ProductCard";
@@ -8,8 +9,12 @@ export default async function Home() {
     const topProducts = (await getTopProducts()) ?? [];
     return (
         <main className="">
+            <Header />
             <Hero />
-            <section className="relative isolate flex flex-col justify-start items-start p-6">
+            <section
+                className="relative isolate flex flex-col justify-start items-start p-6 scroll-m-20"
+                id="top-products"
+            >
                 <div className="h-full w-full">
                     <div className="flex flex-col justify-center items-start  max-w-6xl mx-auto">
                         <div className="max-w-xl ">
