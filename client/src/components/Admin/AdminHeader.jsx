@@ -1,7 +1,18 @@
-import React from "react";
+"use client";
+
 import Link from "next/link";
 import { BiMenu } from "react-icons/bi";
-import { FaUserCircle } from "react-icons/fa";
+import dynamic from "next/dynamic";
+import InfiniteCircularProgressBar from "../InfiniteCircularProgressBar";
+
+const UserOptionsBar = dynamic(() => import("../UserOptionsBar"), {
+    ssr: false,
+    loading: () => (
+        <div className="relative h-8 w-8 rounded-full">
+            <InfiniteCircularProgressBar />
+        </div>
+    ),
+});
 
 const AdminHeader = () => {
     return (
@@ -40,7 +51,7 @@ const AdminHeader = () => {
                                 <Link
                                     scroll={true}
                                     passHref={true}
-                                    href="/admin"
+                                    href="/admin/users"
                                     className="block py-2 pl-3 pr-4 text-gray-900 rounded  md:p-0 hover:text-[#94d82d]"
                                 >
                                     Users
@@ -51,9 +62,7 @@ const AdminHeader = () => {
                             className="relative rounded-full h-8 w-8 ml-6"
                             aria-label="Login/Sign-up"
                         >
-                            <Link passHref href="/auth" title="SignIn/SignUp">
-                                <FaUserCircle className="w-full h-full fill-gray-400 hover:fill-gray-200" />
-                            </Link>
+                            <UserOptionsBar />
                         </div>
                         <button
                             data-collapse-toggle="navbar-cta"

@@ -57,6 +57,19 @@ export const loginUser = async (userData) => {
     }
 };
 
+export const verifyOTP = async (id, otp) => {
+    try {
+        const response = await axios.post(`${API_URL}/verify-otp`, { id, otp });
+        return { status: response.status, data: response.data };
+    } catch (error) {
+        console.error(error.message);
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
+    }
+};
+
 export const getUserProfile = async (token) => {
     try {
         const response = await axios.get(`${API_URL}/profile`, {

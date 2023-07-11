@@ -2,6 +2,7 @@ import { userState } from "@/atoms/user.atom";
 import { loginUser } from "@/services/user.service";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
+import { BiLoader, BiLogInCircle } from "react-icons/bi";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 
@@ -15,7 +16,7 @@ const LoginForm = ({ formRef }) => {
     const [showPass, setShowPass] = useState(false);
     const toggleShowPass = () => setShowPass(!showPass);
 
-    const handleEmailSignIn = async (e) => {
+    const handleSignIn = async (e) => {
         e.preventDefault();
         setState({ loading: true, error: null });
         let { email, password } = document.forms[0];
@@ -25,9 +26,13 @@ const LoginForm = ({ formRef }) => {
         });
         console.log("RES", res);
         if (res.status === 200) {
-            setUser(res.data);
             setState({ loading: false, error: null });
-            if (res.data.passwordExpired) router.replace("/change-password");
+            if (res.data.is2FAEnabled) {
+                return router.replace(`/auth/verify?token=${res.data._id}`);
+            }
+            setUser(res.data);
+            if (res.data.passwordExpired)
+                router.replace("/auth/change-password");
             if (callback) router.replace(callback);
             else if (res.data.isAdmin) router.replace("/admin");
             else router.replace("/");
@@ -37,7 +42,7 @@ const LoginForm = ({ formRef }) => {
     return (
         <form
             className="sm:min-w-[270px]"
-            onSubmit={handleEmailSignIn}
+            onSubmit={handleSignIn}
             ref={formRef}
             id="signin"
         >
@@ -98,8 +103,13 @@ const LoginForm = ({ formRef }) => {
             <div className="mb-4">
                 <button
                     type="submit"
-                    className="text-white text-md bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300  rounded-lg  w-full px-5 py-4 text-center dark:bg-cyan-400 dark:hover:bg-cyan-500 dark:focus:ring-cyan-800 font-semibold"
+                    className="text-white text-md bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300  rounded-lg  w-full px-5 py-4 text-center dark:bg-cyan-400 dark:hover:bg-cyan-500 dark:focus:ring-cyan-800 font-semibold flex gap-2 items-center justify-center"
                 >
+                    {state.loading ? (
+                        <BiLoader className="animate-spin text-xl" />
+                    ) : (
+                        <BiLogInCircle className=" text-xl" />
+                    )}
                     Login
                 </button>
             </div>

@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 import { useState } from "react";
 import { BiSearch, BiX } from "react-icons/bi";
 
-const AllProducts = ({ data }) => {
+const AllProducts = ({ data, compact = false }) => {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
     const handleSearchChange = (event) => setSearchQuery(event.target.value);
@@ -15,9 +15,18 @@ const AllProducts = ({ data }) => {
     );
 
     return (
-        <section className="w-full mt-10 scroll-m-24" id="products">
+        <section
+            className={`w-full scroll-m-24 ${compact ? "mt-0" : "mt-10"}`}
+            id="products"
+        >
             <div className="flex justify-between w-full">
-                <h2 className="mb-4 text-4xl tracking-tight font-bold">
+                <h2
+                    className={`mb-4   ${
+                        compact
+                            ? "text-2xl font-semibold"
+                            : "text-4xl tracking-tight font-bold"
+                    }`}
+                >
                     Products
                 </h2>
                 <form className="flex-2 sm:flex-none z-10">
@@ -43,7 +52,13 @@ const AllProducts = ({ data }) => {
                 </form>
             </div>
 
-            <div className="hidden mt-4 md:grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6 items-stretch flex-wrap w-full">
+            <div
+                className={`hidden mt-4 md:grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch flex-wrap w-full ${
+                    compact
+                        ? ""
+                        : " md:grid-cols-3  lg:grid-cols-4 xl:grid-cols-4"
+                }`}
+            >
                 {filteredProducts.length === 0 && (
                     <div className="flex justify-center items-center w-full">
                         <h1 className="text-2xl text-gray-400 text-center">
@@ -52,7 +67,7 @@ const AllProducts = ({ data }) => {
                     </div>
                 )}
                 {filteredProducts.map((data, index) => (
-                    <ProductCard data={data} key={index} />
+                    <ProductCard data={data} key={index} compact={compact} />
                 ))}
             </div>
         </section>

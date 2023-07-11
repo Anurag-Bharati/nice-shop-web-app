@@ -1,8 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import CreateProductForm from "./CreateProductForm";
+import AllProducts from "../product/AllProducts";
+import { getProducts } from "@/services/product.service";
 
 const AdminDashboard = () => {
+    const [products, setProducts] = useState([]);
+
+    const fetchProducts = async () => {
+        const data = await getProducts();
+        setProducts(data);
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
     const [productData, setProductData] = useState({
         name: "",
         image: "",
@@ -13,9 +27,7 @@ const AdminDashboard = () => {
         countInStock: 0,
     });
 
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
-
+    const handleFormSubmit = () => {
         // Destructure the state object for the API request
         const {
             name,
@@ -50,31 +62,18 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            <h2 className="text-2xl font-semibold mb-4">Add New Product</h2>
-            <form onSubmit={handleFormSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="name" className="block font-semibold">
-                        Product Name
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        className="w-full border rounded py-2 px-3 focus:outline-none focus:ring focus:border-blue-500"
-                        value={productData.name}
-                        onChange={handleInputChange}
-                        required
-                    />
+        <div className="py-6 max-w-6xl mx-auto flex gap-20">
+            <div className="flex-1 ">
+                <AllProducts data={products} compact={true} />
+            </div>
+            <div className="flex flex-col gap-2 w-1/3">
+                <div className="sticky top-[90px] ">
+                    <h2 className="text-2xl font-semibold mb-4">
+                        Add New Product
+                    </h2>
+                    <CreateProductForm handleSubmit={handleFormSubmit} />
                 </div>
-                {/* Other input fields for image, brand, category, etc. */}
-                <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                >
-                    Add Product
-                </button>
-            </form>
+            </div>
         </div>
     );
 };

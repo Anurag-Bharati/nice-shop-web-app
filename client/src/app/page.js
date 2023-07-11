@@ -25,7 +25,7 @@ export default async function Home() {
                                 Shop hundreds of products worldwide.
                             </p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-6">
                             {topProducts.map((product, index) => (
                                 <ProductCard key={index} data={product} />
                             ))}

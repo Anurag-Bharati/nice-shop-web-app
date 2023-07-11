@@ -1,15 +1,24 @@
 "use client";
 
 import { cartState } from "@/atoms/cart.atom";
-import { userState } from "@/atoms/user.atom";
 import Link from "next/link";
 import { useState } from "react";
 import { BiCart, BiMenu, BiX } from "react-icons/bi";
-import { FaUserCircle } from "react-icons/fa";
-import { useRecoilState, useRecoilValue } from "recoil";
+
+import { useRecoilState } from "recoil";
+
+import dynamic from "next/dynamic";
+import InfiniteCircularProgressBar from "./InfiniteCircularProgressBar";
+const UserOptionsBar = dynamic(() => import("./UserOptionsBar"), {
+    ssr: false,
+    loading: () => (
+        <div className="relative h-8 w-8 rounded-full">
+            <InfiniteCircularProgressBar />
+        </div>
+    ),
+});
 
 const Header = () => {
-    const user = useRecoilValue(userState);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const toggleCart = () => setIsCartOpen(!isCartOpen);
     const [cart, setCart] = useRecoilState(cartState);
@@ -27,6 +36,7 @@ const Header = () => {
         const newCart = cart.filter((item) => item.id !== id);
         setCart(newCart);
     };
+
     return (
         <div>
             <nav className=" fixed w-full bg-white border-gray-200 dark:bg-white z-50 border-b ">
@@ -59,19 +69,7 @@ const Header = () => {
                             )}
                             <BiCart className="inline-block text-3xl text-black" />
                         </div>
-                        <div
-                            className="relative rounded-full h-8 w-8"
-                            aria-label="Login/Sign-up"
-                        >
-                            <Link
-                                passHref={true}
-                                href="/auth"
-                                title="SignIn/SignUp"
-                                className=" w-full h-full inline-flex justify-center items-center cursor-pointer z-10  border-2 border-white rounded-full"
-                            >
-                                <FaUserCircle className="w-full h-full fill-gray-400 hover:fill-gray-200" />
-                            </Link>
-                        </div>
+                        <UserOptionsBar />
                         <button
                             data-collapse-toggle="navbar-cta"
                             type="button"

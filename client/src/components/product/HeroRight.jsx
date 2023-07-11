@@ -8,6 +8,7 @@ const HeroRight = () => {
                     <Image
                         src={"/images/offer-banner-right.jpg"}
                         fill={true}
+                        alt="offer image"
                         className="object-cover hover:scale-110 transform transition duration-500 ease-in-out"
                     />
                 </div>

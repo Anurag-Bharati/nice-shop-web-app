@@ -1,19 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { BiStar } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
 
-const ProductCard = ({ data }) => {
+const ProductCard = ({ data, compact = false }) => {
+    const handleRemove = () => {
+        console.log("remove");
+    };
     return (
-        <div className=" w-full max-w-sm bg-white overflow-hidden ">
-            <Link href={`/product/${data._id}`} className="h-48 w-full ">
+        <div className=" w-full max-w-sm overflow-hidden  ">
+            <Link href={`/product/${data._id}`} className="h-48 w-full  ">
                 <Image
-                    height={200}
-                    width={200}
+                    height={300}
+                    width={300}
                     src="/images/offer-banner-right.jpg"
                     alt="product image"
-                    className="h-48 w-full object-cover hover:scale-105 transition-all duration-300 ease-in-out"
+                    className="h-56 w-full object-cover hover:scale-105 transition-all duration-300 ease-in-out bg-gray-100"
                 />
             </Link>
             <div className="pt-4 pb-5 px-1">
@@ -44,12 +46,21 @@ const ProductCard = ({ data }) => {
                 </div>
                 <div className="flex items-center justify-between px-1">
                     <span className="text-xl  text-black ">${data?.price}</span>
-                    <a
-                        href="#"
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                    >
-                        Add to cart
-                    </a>
+                    {compact ? (
+                        <button
+                            className="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+                            onClick={handleRemove}
+                        >
+                            Remove
+                        </button>
+                    ) : (
+                        <a
+                            href="#"
+                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        >
+                            Add to cart
+                        </a>
+                    )}
                 </div>
             </div>
         </div>

@@ -1,10 +1,9 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import RegisterForm from "@/components/Form/RegisterForm";
 import LoginForm from "@/components/Form/LoginForm";
 import { useRecoilState } from "recoil";
 import { isLoginFormActive, signUpFormDataState } from "@/atoms/user.atom";
-import Header from "@/components/Header";
 
 const AuthPage = () => {
     const [registerForm, setRegisterForm] = useRecoilState(signUpFormDataState);
@@ -25,7 +24,6 @@ const AuthPage = () => {
 
     return (
         <>
-            <Header />
             <section className="relative isolate overflow-hidden p-4 h-[calc(100vh-80px)] mx-auto md:px-10 max-w-7xl lg:px-8 scroll-mt-32 flex flex-col justify-center items-center">
                 {/* Wrapper */}
                 <div className="relative flex w-full h-full justify-evenly items-center">

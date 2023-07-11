@@ -4,7 +4,7 @@ import React from "react";
 import CreateReviewForm from "./CreateReviewForm";
 import Reviews from "./Reviews";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { cartState } from "@/atoms/cart.atom";
+import { cartOpenState, cartState } from "@/atoms/cart.atom";
 import { useRouter } from "next/navigation";
 import { userState } from "@/atoms/user.atom";
 
@@ -12,26 +12,27 @@ const SpecificProduct = ({ product }) => {
     const user = useRecoilValue(userState);
     const router = useRouter();
     const [cart, setCart] = useRecoilState(cartState);
+    const [cartOpen, setCartOpen] = useRecoilState(cartOpenState);
     const handleAddToCart = () => {
         setCart([...cart, { ...product, quantity: 1 }]);
     };
     const handleBuyNow = () => {
-        if (!userState || !userState.token)
+        if (!user || !user.token)
             return router.push(`/auth?callback=/product/${product._id}`);
         setCart([{ ...product, quantity: 1 }]);
-        router.push("/checkout");
+        setCartOpen(true);
     };
     return (
-        <div className="max-w-4xl mx-auto p-4">
+        <div className="max-w-6xl mx-auto p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="md:order-1">
+                <div className="md:order-1 bg-zinc-100 w-full h-full">
                     <img
-                        src={product.image}
+                        src={"/images/offer-banner-right.jpg"}
                         alt={product.name}
-                        className="w-full h-auto"
+                        className="w-full h-full object-cover"
                     />
                 </div>
-                <div className="md:order-1">
+                <div className="md:order-1 flex flex-col justify-evenly">
                     <h1 className="text-3xl font-semibold mb-2">
                         {product.name}
                     </h1>

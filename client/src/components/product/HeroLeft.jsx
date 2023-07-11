@@ -4,10 +4,11 @@ const HeroLeft = () => {
     return (
         <div className="relative h-full w-full flex flex-col gap-4">
             <div className=" relative h-2/3  overflow-clip cursor-pointer">
-                <div className="flex md:flex-col pl-6 h-full">
+                <div className="flex md:flex-col pl-6 h-full bg-[#f0d90d]">
                     <Image
                         src={"/images/offer-banner-left.jpg"}
                         fill={true}
+                        alt="offer image"
                         className="object-cover hover:scale-110 transform transition duration-500 ease-in-out"
                     />
                 </div>
