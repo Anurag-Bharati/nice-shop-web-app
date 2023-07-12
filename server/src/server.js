@@ -9,6 +9,8 @@ import { notFound, errorHandler } from "./middleware/err.mware.js";
 import routeLogger from "./utils/logging.js";
 import userRoutes from "./routes/user.routes.js";
 import productRoutes from "./routes/product.routes.js";
+import orderRoutes from "./routes/order.routes.js";
+
 import morgan from "morgan";
 
 // Config
@@ -30,6 +32,7 @@ app.get("/", (req, res) => res.send("API IS UP AND RUNNING"));
 // Routes Start
 app.use("/api/users", routeLogger("users"), userRoutes);
 app.use("/api/products", routeLogger("product"), productRoutes);
+app.use("/api/orders", routeLogger("orders"), orderRoutes);
 
 app.get("*", notFound);
 app.use(errorHandler);

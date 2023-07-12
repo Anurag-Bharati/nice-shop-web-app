@@ -22,6 +22,7 @@ const userSchema = mongoose.Schema(
         passwordLastChanged: { type: Date, default: Date.now },
         loginAttempts: { type: Number, default: 0 },
         lockedUntil: { type: Date, default: null },
+        emailVerified: { type: Boolean, default: false },
     },
     { timestamps: true }
 );
