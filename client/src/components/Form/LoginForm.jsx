@@ -28,7 +28,11 @@ const LoginForm = ({ formRef }) => {
         if (res.status === 200) {
             setState({ loading: false, error: null });
             if (res.data.is2FAEnabled) {
-                return router.replace(`/auth/verify?token=${res.data._id}`);
+                return router.replace(
+                    `/auth/verify?id=${res.data._id}${
+                        callback ? `&callback=${callback}` : ""
+                    }`
+                );
             }
             setUser(res.data);
             if (res.data.passwordExpired)

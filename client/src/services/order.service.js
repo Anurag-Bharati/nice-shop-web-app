@@ -5,7 +5,7 @@ export const getOrders = async (token) => {
         const response = await axios.get("/orders/", {
             headers: { Authorization: `Bearer ${token}` },
         });
-        return response.data;
+        return { status: response.status, data: response.data };
     } catch (error) {
         console.error(error.message);
         return {
@@ -15,13 +15,12 @@ export const getOrders = async (token) => {
     }
 };
 
-// getMyOrders
 export const getMyOrders = async (token) => {
     try {
         const response = await axios.get("/orders/myorders", {
             headers: { Authorization: `Bearer ${token}` },
         });
-        return response.data;
+        return { status: response.status, data: response.data };
     } catch (error) {
         console.error(error.message);
         return {
@@ -30,13 +29,14 @@ export const getMyOrders = async (token) => {
         };
     }
 };
-// createOrder
-export const createOrder = async (order, token) => {
+export const createOrder = async (orders, token) => {
     try {
-        const response = await axios.post("/orders/", order, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        return response.data;
+        const response = await axios.post(
+            "/orders/",
+            { orderItems: orders },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        return { status: response.status, data: response.data };
     } catch (error) {
         console.error(error.message);
         return {
@@ -45,8 +45,6 @@ export const createOrder = async (order, token) => {
         };
     }
 };
-
-// updateOrderStatus
 
 export const updateOrderStatus = async (id, status, token) => {
     try {
@@ -57,7 +55,7 @@ export const updateOrderStatus = async (id, status, token) => {
                 headers: { Authorization: `Bearer ${token}` },
             }
         );
-        return response.data;
+        return { status: response.status, data: response.data };
     } catch (error) {
         console.error(error.message);
         return {
@@ -73,7 +71,7 @@ export const removeOrder = async (id, token) => {
         const response = await axios.delete(`/orders/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
-        return response.data;
+        return { status: response.status, data: response.data };
     } catch (error) {
         console.error(error.message);
         return {

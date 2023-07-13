@@ -121,7 +121,6 @@ const OrderDataTable = ({ data }) => {
             sn: index + 1,
             createdAt: order.createdAt.toDate().toLocaleString(),
         }));
-    console.log(managedData);
     return (
         <div className="flex flex-col gap-4">
             <p className="text-2xl font-semibold text-gray-700">

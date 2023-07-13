@@ -12,7 +12,7 @@ const VerificationPage = () => {
     const router = useRouter();
     const params = useSearchParams();
 
-    const id = params.get("token");
+    const id = params.get("id");
     const callback = params.get("callback");
 
     if (!id) {
@@ -36,11 +36,8 @@ const VerificationPage = () => {
     const [user, setUser] = useRecoilState(userState);
 
     const handleOTPSubmit = async (otp) => {
-        const res = await verifyOTP(id, otp);
+        const res = await verifyOTP(id?.trim(), otp);
         if (res.status === 200) {
-            if (res.data.is2FAEnabled) {
-                return router.replace(`/auth/verify?token=${res.data._id}`);
-            }
             setUser(res.data);
             setState({ loading: false, error: null });
             if (res.data.passwordExpired)

@@ -7,6 +7,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { cartOpenState, cartState } from "@/atoms/cart.atom";
 import { useRouter } from "next/navigation";
 import { userState } from "@/atoms/user.atom";
+import AddToCartButton from "./AddToCartButton";
 
 const SpecificProduct = ({ product }) => {
     const user = useRecoilValue(userState);
@@ -56,18 +57,8 @@ const SpecificProduct = ({ product }) => {
                         </span>
                     </div>
                     <div className="flex space-x-4">
-                        <button
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                            onClick={handleAddToCart}
-                        >
-                            Add to Cart
-                        </button>
-                        <button
-                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-                            onClick={handleBuyNow}
-                        >
-                            Buy Now
-                        </button>
+                        <AddToCartButton data={product} />
+                        <AddToCartButton data={product} varient="buy-now" />
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BiMenu } from "react-icons/bi";
 import dynamic from "next/dynamic";
 import InfiniteCircularProgressBar from "../InfiniteCircularProgressBar";
+import useAdmin from "@/hooks/useAdmin";
 
 const UserOptionsBar = dynamic(() => import("../UserOptionsBar"), {
     ssr: false,
@@ -15,6 +16,7 @@ const UserOptionsBar = dynamic(() => import("../UserOptionsBar"), {
 });
 
 const AdminHeader = () => {
+    useAdmin();
     return (
         <div>
             <nav className="fixed w-full bg-white border-gray-200 dark:bg-white z-50 border-b">
