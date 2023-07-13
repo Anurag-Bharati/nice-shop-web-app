@@ -7,6 +7,15 @@ export const validateEmail = (emailErrors) =>
 export const validatePassword = (passErrors) =>
     passErrors.every((error) => !error.status);
 
+export function getTokenFromStorage() {
+    if (typeof window === "undefined") return null;
+    const user = localStorage.getItem("user");
+    if (user) {
+        return JSON.parse(user).token;
+    }
+    return null;
+}
+
 export const validateForm = (
     passErrors,
     fullNameAndEmailErrors,

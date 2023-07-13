@@ -1,10 +1,8 @@
-import axios from "axios";
-
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/products`;
+import axios from "@/config/axios.config";
 
 export const getProducts = async () => {
     try {
-        const response = await axios.get(API_URL);
+        const response = await axios.get("/products/");
         return response.data.products;
     } catch (error) {
         console.error(error.message);
@@ -17,7 +15,7 @@ export const getProducts = async () => {
 
 export const getTopProducts = async () => {
     try {
-        const response = await axios.get(`${API_URL}/top`);
+        const response = await axios.get("/products/top");
         return response.data;
     } catch (error) {
         console.error(error.message);
@@ -30,7 +28,7 @@ export const getTopProducts = async () => {
 
 export const getProductByID = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/${id}`);
+        const response = await axios.get(`/products/${id}`);
         return response.data;
     } catch (error) {
         console.error(error.message);

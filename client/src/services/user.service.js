@@ -1,10 +1,8 @@
-import axios from "axios";
-
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/users`;
+import axios from "@/config/axios.config";
 
 export const registerUser = async (userData) => {
     try {
-        const response = await axios.post(API_URL, userData);
+        const response = await axios.post("/users/", userData);
         return { status: response.status, message: response.data.message };
     } catch (error) {
         console.error(error.message);
@@ -17,7 +15,7 @@ export const registerUser = async (userData) => {
 
 export const verifyPassword = async (password) => {
     try {
-        const response = await axios.post(`${API_URL}/verify-password`, {
+        const response = await axios.post(`/users/verify-password`, {
             password,
         });
         return response.data;
@@ -29,13 +27,10 @@ export const verifyPassword = async (password) => {
 
 export const verifyFullnameAndEmail = async (fullname, email) => {
     try {
-        const response = await axios.post(
-            `${API_URL}/verify-fullname-and-email`,
-            {
-                fullname,
-                email,
-            }
-        );
+        const response = await axios.post("/users/verify-fullname-and-email", {
+            fullname,
+            email,
+        });
         return response.data;
     } catch (error) {
         console.error(error.message);
@@ -45,7 +40,7 @@ export const verifyFullnameAndEmail = async (fullname, email) => {
 
 export const loginUser = async (userData) => {
     try {
-        const response = await axios.post(`${API_URL}/login`, userData);
+        const response = await axios.post("/users/login", userData);
         console.log(response);
         return { status: response.status, data: response.data };
     } catch (error) {
@@ -59,7 +54,7 @@ export const loginUser = async (userData) => {
 
 export const verifyOTP = async (id, otp) => {
     try {
-        const response = await axios.post(`${API_URL}/verify-otp`, { id, otp });
+        const response = await axios.post("/users/verify-otp", { id, otp });
         return { status: response.status, data: response.data };
     } catch (error) {
         console.error(error.message);
@@ -72,7 +67,7 @@ export const verifyOTP = async (id, otp) => {
 
 export const getUserProfile = async (token) => {
     try {
-        const response = await axios.get(`${API_URL}/profile`, {
+        const response = await axios.get("/users/profile", {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -86,7 +81,7 @@ export const getUserProfile = async (token) => {
 
 export const updateUserProfile = async (token, updatedData) => {
     try {
-        const response = await axios.put(`${API_URL}/profile`, updatedData, {
+        const response = await axios.put("/users/profile", updatedData, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

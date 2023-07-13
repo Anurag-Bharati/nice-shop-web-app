@@ -29,10 +29,10 @@ const AdminHeader = () => {
                         <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border md:flex-row md:space-x-8 md:mt-0 md:border-0 text-md">
                             <li>
                                 <Link
-                                    href="/#"
+                                    href="/admin"
                                     className="block py-2 pl-3 pr-4 text-gray-900 rounded  md:p-0 hover:text-[#94d82d]"
                                 >
-                                    Homepage
+                                    Dashboard
                                 </Link>
                             </li>
 
@@ -40,7 +40,7 @@ const AdminHeader = () => {
                                 <Link
                                     scroll={true}
                                     passHref={true}
-                                    href="/admin"
+                                    href="/admin/products"
                                     className="block py-2 pl-3 pr-4 text-gray-900 rounded  md:p-0 hover:text-[#94d82d]"
                                 >
                                     Products
