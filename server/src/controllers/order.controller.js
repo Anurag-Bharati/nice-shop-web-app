@@ -8,14 +8,12 @@ const createOrder = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("No user");
     }
-    if (orderItems && orderItems.length === 0) {
+    if (!orderItems || orderItems.length === 0) {
         res.status(400);
         throw new Error("No order items");
     }
-
-    const order = new Order({ user, orderItems });
-    const createdOrder = await order.save();
-    res.status(201).json(createdOrder);
+    const order = await Order.create({ user, orderItems });
+    res.status(201).json(order);
 });
 
 const updateOrderStatus = asyncHandler(async (req, res) => {
@@ -33,8 +31,9 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
 const getOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find({})
-        .populate("user", "id name")
-        .populate("orderItems", "id name");
+        .populate("user", "id fullname email")
+        .populate("orderItems.product", "name price image")
+        .sort({ createdAt: -1 });
     res.json(orders);
 });
 

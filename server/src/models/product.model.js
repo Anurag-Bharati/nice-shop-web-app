@@ -22,7 +22,7 @@ const productSchema = Schema(
             ref: "User",
         },
         name: { type: String, required: true },
-        image: { type: String, required: true },
+        image: { type: String, default: "/images/dummy.png" },
         brand: { type: String, required: true },
         category: { type: String, required: true },
         description: { type: String, required: true },

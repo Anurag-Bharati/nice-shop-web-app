@@ -9,9 +9,11 @@ const orderSchema = Schema(
         },
         orderItems: [
             {
-                type: Schema.Types.ObjectId,
-                required: true,
-                ref: "Product",
+                product: {
+                    type: Schema.Types.ObjectId,
+                    required: true,
+                    ref: "Product",
+                },
                 quantity: { type: Number, required: true },
             },
         ],
@@ -32,12 +34,17 @@ const orderSchema = Schema(
 
 orderSchema.pre("save", async function (next) {
     const order = this;
+    try {
+        await order.populate("orderItems.product");
+    } catch (error) {
+        console.log(error);
+    }
     const totalPrice = order.orderItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
+        (acc, item) =>
+            acc + parseFloat(item.product.price) * parseInt(item.quantity),
         0
     );
     order.totalPrice = totalPrice;
-    order.save();
     next();
 });
 
