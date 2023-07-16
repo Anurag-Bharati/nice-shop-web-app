@@ -5,6 +5,7 @@ export const getOrders = async (token) => {
         const response = await axios.get("/orders/", {
             headers: { Authorization: `Bearer ${token}` },
         });
+        console.log(response);
         return { status: response.status, data: response.data };
     } catch (error) {
         console.error(error.message);

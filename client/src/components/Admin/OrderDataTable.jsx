@@ -1,4 +1,6 @@
-import { removeOrder, updateOrderStatus } from "@/services/order.service";
+"use client";
+
+import { updateOrderStatus } from "@/services/order.service";
 import DataTable from "react-data-table-component";
 import { getTokenFromStorage } from "@/utils/utils";
 
@@ -23,7 +25,7 @@ const customStyles = {
     },
 };
 
-const columns = [
+const columns = (callback) => [
     {
         name: "SN",
         selector: "sn",
@@ -35,33 +37,56 @@ const columns = [
         name: "Orders",
         cell: (row) => (
             <div className="flex flex-wrap gap-1  items-center">
-                {row.orders.map((order) => (
+                {row?.orderItems?.map((o) => (
                     <div
-                        key={order.id}
+                        key={o?._id}
                         className="bg-gray-200 rounded-md px-1 py-0.5"
                     >
-                        {order.quantity} x {order.name}
+                        {o?.quantity} x {o?.product?.name}
                     </div>
                 ))}
             </div>
         ),
-        width: "400px",
+        width: "340px",
     },
     {
         name: "User",
         selector: "user",
         sortable: true,
+        width: "180px",
+        cell: (row) => (
+            <div className="flex flex-col gap-1">
+                <span className="text-gray-700">{row?.user?.fullname}</span>
+            </div>
+        ),
     },
     {
-        name: "Date of Order",
+        name: "Date ",
         selector: "createdAt",
         sortable: true,
+        cell: (row) =>
+            new Date(row.createdAt).toDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            }),
+    },
+    {
+        name: "Time",
+        selector: "createdAt",
+        sortable: true,
+        cell: (row) =>
+            new Date(row.createdAt).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            }),
     },
     {
         name: "Status",
         selector: "status",
         sortable: true,
-        width: "100px",
+        width: "120px",
     },
     {
         name: "Mark Order As",
@@ -72,10 +97,10 @@ const columns = [
                     <button
                         onClick={() =>
                             updateOrderStatus(
-                                row.id,
+                                row._id,
                                 "processing",
                                 getTokenFromStorage()
-                            )
+                            ).finally(() => callback())
                         }
                         className=" bg-cyan-500 text-white px-2 py-1 rounded-md"
                     >
@@ -86,10 +111,10 @@ const columns = [
                     <button
                         onClick={() =>
                             updateOrderStatus(
-                                row.id,
+                                row._id,
                                 "completed",
                                 getTokenFromStorage()
-                            )
+                            ).finally(() => callback())
                         }
                         className=" bg-green-500 text-white px-2 py-1 rounded-md"
                     >
@@ -99,7 +124,11 @@ const columns = [
                 {row.status === "pending" && (
                     <button
                         onClick={() =>
-                            removeOrder(row.id, getTokenFromStorage())
+                            updateOrderStatus(
+                                row._id,
+                                "rejected",
+                                getTokenFromStorage()
+                            ).finally(() => callback())
                         }
                         className=" bg-red-500 text-white px-2 py-1 rounded-md"
                     >
@@ -111,31 +140,23 @@ const columns = [
     },
 ];
 
-const OrderDataTable = ({ data }) => {
-    const managedData = data
-        .map((o) => ({ ...o.data(), id: o.id }))
-        .map((order, index) => ({
-            ...order,
-            user: order.user.name,
-            uid: order.user.id,
-            sn: index + 1,
-            createdAt: order.createdAt.toDate().toLocaleString(),
-        }));
+const OrderDataTable = ({ data, callback }) => {
+    data = data?.map((o, i) => ({ ...o, sn: i + 1 }));
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 w-full">
             <p className="text-2xl font-semibold text-gray-700">
                 Pending Orders
             </p>
             <div>
                 <DataTable
-                    columns={columns}
-                    data={managedData.filter(
+                    columns={columns(callback)}
+                    data={data?.filter(
                         (o) =>
                             o.status === "pending" || o.status === "processing"
                     )}
                     customStyles={customStyles}
                     pagination
-                    paginationPerPage={8} // Adjust the number of rows per page
+                    paginationPerPage={8}
                     paginationRowsPerPageOptions={[8, 16, 32, 64]}
                 />
             </div>
@@ -144,8 +165,8 @@ const OrderDataTable = ({ data }) => {
             </p>
             <div>
                 <DataTable
-                    columns={[...columns].slice(0, -1)}
-                    data={managedData.filter(
+                    columns={[...columns(callback)].slice(0, -1)}
+                    data={data?.filter(
                         (o) =>
                             o.status === "completed" || o.status === "rejected"
                     )}

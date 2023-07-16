@@ -1,8 +1,12 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { BiImageAdd } from "react-icons/bi";
+import { userState } from "@/atoms/user.atom";
+import { useRecoilValue } from "recoil";
+import { createProduct } from "@/services/product.service";
 
 const CreateProductForm = ({ callback }) => {
+    const user = useRecoilValue(userState);
     const [image, setImage] = useState(null);
     const [imageData, setImageData] = useState(null);
     const filePickerRef = useRef(null);
@@ -19,15 +23,27 @@ const CreateProductForm = ({ callback }) => {
         };
     };
 
-    const handleSave = (e) => {
+    const handleSave = async (e) => {
         e.preventDefault();
         const formData = new FormData(formRef.current);
         formData.append("image", imageData);
 
         // Upload form data to server or perform other actions
-        console.log(formData);
+        const data = {
+            name: formData.get("name"),
+            category: formData.get("category"),
+            brand: formData.get("brand"),
+            price: parseFloat(formData.get("price")),
+            countInStock: parseInt(formData.get("countInStock")),
+            description: formData.get("description"),
+        };
 
-        // callback(); to update the products list
+        const res = await createProduct(data, user.token);
+        if (res.status === 201) {
+            clearImage();
+            formRef.current.reset();
+            callback();
+        }
     };
 
     const clearImage = () => {

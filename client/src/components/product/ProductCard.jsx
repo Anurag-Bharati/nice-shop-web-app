@@ -3,16 +3,16 @@ import Link from "next/link";
 import React from "react";
 import { FaStar } from "react-icons/fa";
 import AddToCartButton from "./AddToCartButton";
+import RemoveProductButton from "./RemoveProductButton";
 
-const ProductCard = ({ data, compact = false }) => {
-    const handleRemove = () => console.log("remove");
+const ProductCard = ({ data, compact = false, callback }) => {
     return (
         <div className=" w-full max-w-sm overflow-hidden  ">
             <Link href={`/product/${data._id}`} className="h-48 w-full  ">
                 <Image
                     height={300}
                     width={300}
-                    src="/images/offer-banner-right.jpg"
+                    src={data?.image}
                     alt="product image"
                     className="h-56 w-full object-cover hover:scale-105 transition-all duration-300 ease-in-out bg-gray-100"
                 />
@@ -46,12 +46,10 @@ const ProductCard = ({ data, compact = false }) => {
                 <div className="flex items-center justify-between px-1">
                     <span className="text-xl  text-black ">${data?.price}</span>
                     {compact ? (
-                        <button
-                            className="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-                            onClick={handleRemove}
-                        >
-                            Remove
-                        </button>
+                        <RemoveProductButton
+                            id={data?._id}
+                            callback={callback}
+                        />
                     ) : (
                         <AddToCartButton data={data} />
                     )}

@@ -26,34 +26,34 @@ const SpecificProduct = ({ product }) => {
     return (
         <div className="max-w-6xl mx-auto p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="md:order-1 bg-zinc-100 w-full h-full">
+                <div className="md:order-1 bg-zinc-100 w-full h-full max-h-[400px]">
                     <img
-                        src={"/images/offer-banner-right.jpg"}
-                        alt={product.name}
+                        src={product?.image}
+                        alt={product?.name}
                         className="w-full h-full object-cover"
                     />
                 </div>
                 <div className="md:order-1 flex flex-col justify-evenly">
                     <h1 className="text-3xl font-semibold mb-2">
-                        {product.name}
+                        {product?.name}
                     </h1>
-                    <p className="text-gray-600 mb-2">By {product.brand}</p>
-                    <p className="text-gray-800 mb-4">{product.description}</p>
+                    <p className="text-gray-600 mb-2">By {product?.brand}</p>
+                    <p className="text-gray-800 mb-4">{product?.description}</p>
                     <p className="text-gray-600 mb-2">
-                        Category: {product.category}
+                        Category: {product?.category}
                     </p>
                     <p className="text-green-600 font-semibold mb-2 text-2xl italic">
-                        ${product.price}
+                        ${product?.price}
                     </p>
                     <p className="text-gray-600 mb-2">
-                        In Stock: {product.countInStock}
+                        In Stock: {product?.countInStock}
                     </p>
                     <div className="flex items-center mb-2">
                         <span className="text-yellow-400">
-                            {product.rating}
+                            {product?.rating}
                         </span>
                         <span className="ml-1 text-gray-600">
-                            ({product.reviews} reviews)
+                            ({product?.reviews} reviews)
                         </span>
                     </div>
                     <div className="flex space-x-4">
@@ -66,7 +66,7 @@ const SpecificProduct = ({ product }) => {
                 onReviewSubmit={() => null}
                 productId={product._id}
             />
-            <Reviews reviews={product.reviews} />
+            <Reviews reviews={product?.reviews} />
         </div>
     );
 };

@@ -9,17 +9,20 @@ import OrderDataTable from "./OrderDataTable";
 const AdminDashboard = () => {
     const user = useRecoilValue(userState);
     const [orders, setOrders] = useState([]);
+    const fetchOrders = async () => {
+        if (!user?.isAdmin) return;
+        const res = await getOrders(user.token);
+        if (res.status === 200) setOrders(res.data);
+        console.log(res.data);
+    };
     useEffect(() => {
         if (!user?.isAdmin) return;
-        const fetchOrders = async () => {
-            const res = await getOrders(user.token);
-            setOrders(res);
-        };
         fetchOrders();
     }, [user?.isAdmin]);
+
     return (
-        <div className="py-6 px-4 max-w-6xl mx-auto flex gap-20">
-            <OrderDataTable data={orders} />
+        <div className="py-6 px-4  mx-auto flex gap-20 w-full max-w-6xl">
+            <OrderDataTable data={orders} callback={fetchOrders} />
         </div>
     );
 };

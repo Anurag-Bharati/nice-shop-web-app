@@ -38,3 +38,40 @@ export const getProductByID = async (id) => {
         };
     }
 };
+
+export const createProduct = async (product, token) => {
+    try {
+        const response = await axios.post("/products/", product, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return {
+            status: response.status,
+            data: response.data,
+        };
+    } catch (error) {
+        console.error(error.message);
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
+    }
+};
+
+// remove
+export const deleteProduct = async (id, token) => {
+    try {
+        const response = await axios.delete(`/products/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return {
+            status: response.status,
+            data: response.data,
+        };
+    } catch (error) {
+        console.error(error.message);
+        return {
+            status: error.response.status,
+            message: error.response.data.message,
+        };
+    }
+};

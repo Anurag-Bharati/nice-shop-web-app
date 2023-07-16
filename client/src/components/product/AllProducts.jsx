@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 import { useState } from "react";
 import { BiSearch, BiX } from "react-icons/bi";
 
-const AllProducts = ({ data, compact = false }) => {
+const AllProducts = ({ data, compact = false, callback = null }) => {
     const router = useRouter();
     const [searchQuery, setSearchQuery] = useState("");
     const handleSearchChange = (event) => setSearchQuery(event.target.value);
@@ -67,7 +67,12 @@ const AllProducts = ({ data, compact = false }) => {
                     </div>
                 )}
                 {filteredProducts.map((data, index) => (
-                    <ProductCard data={data} key={index} compact={compact} />
+                    <ProductCard
+                        data={data}
+                        key={index}
+                        compact={compact}
+                        callback={callback}
+                    />
                 ))}
             </div>
         </section>
